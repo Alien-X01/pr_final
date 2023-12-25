@@ -1,0 +1,26 @@
+name: Deploy Application
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Execute Deployment Script
+      run: |
+        echo "$PRIVATE_KEY" > /tmp/private_key
+        chmod 600 /tmp/private_key
+        ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /tmp/private_key admin@3.142.255.124 << 'EOF'
+          sudo apt update
+       EOF
+      
+      env:
+        PRIVATE_KEY: ${{ secrets.DEBIAN }}
+      
